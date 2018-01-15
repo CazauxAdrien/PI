@@ -37,14 +37,14 @@ public class Main {
 			 
 			   System.out.println(matchedKeyspaces);*/
 		long a =System.currentTimeMillis();
-		q.acces_concurrent(90);
+		//q.acces_concurrent(90);
 		long b =System.currentTimeMillis()-a;
 		System.out.println(b);
 		
-		
+		System.out.println(q.generatedate(10));
 		q.close();
 		
-		/*InfluxDB influxDB = InfluxDBFactory.connect("http://127.0.0.1:8086", "root", "root");
+		/*InfluxDB influxDB = InfluxDBFactory.connect("http://127.0.0.1:8086");
 		System.out.println(influxDB.ping());
 		//influxDB.createDatabase("library");
 		influxDB.setDatabase("library");

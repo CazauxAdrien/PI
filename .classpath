@@ -34,5 +34,10 @@
 	<classpathentry kind="lib" path="/home/adrien/Téléchargements/commons-lang3-3.7/commons-lang3-3.7-sources.jar"/>
 	<classpathentry kind="lib" path="/home/adrien/Téléchargements/commons-lang3-3.7/commons-lang3-3.7-tests.jar"/>
 	<classpathentry kind="lib" path="/home/adrien/Téléchargements/commons-lang3-3.7/commons-lang3-3.7-test-sources.jar"/>
+	<classpathentry kind="lib" path="/home/adrien/Téléchargements/joda-time-2.4/joda-time-2.4.jar"/>
+	<classpathentry kind="lib" path="/home/adrien/Téléchargements/joda-time-2.4/joda-time-2.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/adrien/Téléchargements/joda-time-2.4/joda-time-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="/home/adrien/Téléchargements/jfreechart.jar"/>
+	<classpathentry kind="lib" path="/home/adrien/Téléchargements/jcommon.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
