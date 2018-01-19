@@ -240,7 +240,7 @@ public class Point {
   /**
    * @return the tags
    */
-  Map<String, String> getTags() {
+  public Map<String, String> getTags() {
     return this.tags;
   }
 

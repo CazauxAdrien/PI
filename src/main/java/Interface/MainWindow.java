@@ -6,13 +6,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import java.awt.BorderLayout;
 import javax.swing.JTextField;
 
 import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
 
 import courbe.Connexion_Cassandra;
+import courbe.Connexion_influxDB;
+import courbe.InfluxTest;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -114,16 +114,20 @@ public class MainWindow {
 		JButton button = new JButton("Connexion");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				Connexion_influxDB inf = new Connexion_influxDB();
+				InfluxDB influxDB =null;
+				inf.influxDB=influxDB;
 				try{
 					String IP=textField_2.getText();
 					int port = Integer.parseInt(textField_3.getText());	
-					InfluxDB influxDB = InfluxDBFactory.connect("http://"+IP+":"+port);
-					System.out.println(influxDB.ping());
+					inf.connect_influx(IP, port);
+					
 				}
 				catch(Exception e){
 					JOptionPane.showMessageDialog(null, "Erreur de connexion");
 				}
+				InfluxTest influxtest = new InfluxTest(inf);
+				influxtest.setVisible(true);
 			}
 		});
 		button.setBounds(331, 222, 117, 25);
