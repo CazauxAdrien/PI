@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+
 import courbe.Connexion_Cassandra;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -15,10 +18,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 import java.awt.Scrollbar;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JEditorPane;
+import javax.swing.JTextArea;
 
 public class Cassandra extends JFrame {
 
@@ -51,7 +57,7 @@ public class Cassandra extends JFrame {
 	 */
 	public Cassandra(Connexion_Cassandra q) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(50, 50, 1600, 800);
+		setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -62,40 +68,101 @@ public class Cassandra extends JFrame {
 		contentPane.add(lblTestAuto);
 		
 		JLabel lblKeyspace = new JLabel("Keyspace");
-		lblKeyspace.setBounds(28, 101, 70, 15);
+		lblKeyspace.setBounds(52, 101, 70, 15);
 		contentPane.add(lblKeyspace);
 		
 		textField = new JTextField();
-		textField.setBounds(259, 101, 114, 19);
+		textField.setBounds(28, 128, 114, 19);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
 		JLabel lblTable = new JLabel("Table");
-		lblTable.setBounds(28, 409, 70, 15);
+		lblTable.setBounds(285, 173, 70, 15);
 		contentPane.add(lblTable);
 		
 		textField_1 = new JTextField();
-		textField_1.setBounds(259, 409, 114, 19);
+		textField_1.setBounds(259, 200, 114, 19);
 		contentPane.add(textField_1);
 		textField_1.setColumns(10);
 		
 		JLabel lblNbClients = new JLabel("Nb Clients");
-		lblNbClients.setBounds(28, 482, 114, 15);
+		lblNbClients.setBounds(28, 249, 114, 15);
 		contentPane.add(lblNbClients);
 		
 		textField_2 = new JTextField();
-		textField_2.setBounds(259, 482, 114, 19);
+		textField_2.setBounds(28, 292, 114, 19);
 		contentPane.add(textField_2);
 		textField_2.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("Nb Connexion");
-		lblNewLabel.setBounds(29, 549, 137, 15);
+		lblNewLabel.setBounds(259, 249, 137, 15);
 		contentPane.add(lblNewLabel);
 		
 		textField_3 = new JTextField();
-		textField_3.setBounds(259, 549, 114, 19);
+		textField_3.setBounds(259, 292, 114, 19);
 		contentPane.add(textField_3);
 		textField_3.setColumns(10);
+		
+		JLabel lblReplication = new JLabel("Replication  Stratégie");
+		lblReplication.setBounds(234, 101, 168, 15);
+		contentPane.add(lblReplication);
+		
+		JLabel lblReplicationFactor = new JLabel("Replication Factor");
+		lblReplicationFactor.setBounds(27, 173, 168, 15);
+		contentPane.add(lblReplicationFactor);
+		
+		textField_4 = new JTextField();
+		textField_4.setBounds(259, 128, 114, 19);
+		contentPane.add(textField_4);
+		textField_4.setColumns(10);
+		
+		textField_5 = new JTextField();
+		textField_5.setBounds(28, 200, 114, 19);
+		contentPane.add(textField_5);
+		textField_5.setColumns(10);
+		
+
+		JTextArea textArea = new JTextArea();
+		textArea.setRows(5);
+		textArea.setBounds(22, 388, 374, 113);
+		textArea.setLineWrap(true);
+		contentPane.add(textArea);
+		
+		JTextPane textPane_1 = new JTextPane();
+		textPane_1.setBounds(420, 43, 828, 704);
+		
+		
+		
+		JScrollPane jsp_1 = new JScrollPane(textPane_1);
+		jsp_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		jsp_1.setBounds(420, 430, 1103, 370);
+		
+		contentPane.add(jsp_1);
+		
+		
+		JButton btnExecuter = new JButton("Executer");
+		btnExecuter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ResultSet result=q.getCluster().newSession().execute(textArea.getText());
+				List<Row> matchedKeyspaces = result.all();
+				textPane_1.setText(matchedKeyspaces.toString());
+			}
+		});
+		
+
+		JTextPane textPane = new JTextPane();
+		textPane.setBounds(420, 43, 828, 704);
+		textPane.setText(q.getCluster().getMetadata().exportSchemaAsString()+
+				q.getCluster().getMetadata().getAllHosts());
+		
+		
+		JScrollPane jsp = new JScrollPane(textPane);
+		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		jsp.setBounds(420, 43, 1103, 370);
+		
+		contentPane.add(jsp);
+		btnExecuter.setBounds(146, 548, 117, 25);
+		contentPane.add(btnExecuter);
 		
 		JButton btnLancer = new JButton("Lancer");
 		btnLancer.addActionListener(new ActionListener() {
@@ -112,7 +179,7 @@ public class Cassandra extends JFrame {
 				
 				q.acces_concurrent(textField.getText(),textField_1.getText(),connex,clients);
 				
-				System.out.println("End of proces");
+				System.out.println("End of process");
 				
 				SwingUtilities.invokeLater(() -> {
 				      Cassandra_plot example = new Cassandra_plot("Line Chart Example",q.DatasetTest);
@@ -122,45 +189,15 @@ public class Cassandra extends JFrame {
 				      example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 				      example.setVisible(true);
 				});
-			dispose();
+				textPane.setText(q.getCluster().getMetadata().exportSchemaAsString()+
+						q.getCluster().getMetadata().getAllHosts());
 			}
 		});
-		btnLancer.setBounds(173, 590, 117, 25);
+		btnLancer.setBounds(146, 338, 117, 25);
 		contentPane.add(btnLancer);
 		
-		JLabel lblReplication = new JLabel("Replication  Stratégie");
-		lblReplication.setBounds(28, 211, 168, 15);
-		contentPane.add(lblReplication);
-		
-		JLabel lblReplicationFactor = new JLabel("Replication Factor");
-		lblReplicationFactor.setBounds(28, 295, 168, 15);
-		contentPane.add(lblReplicationFactor);
-		
-		textField_4 = new JTextField();
-		textField_4.setBounds(259, 209, 114, 19);
-		contentPane.add(textField_4);
-		textField_4.setColumns(10);
-		
-		textField_5 = new JTextField();
-		textField_5.setBounds(259, 293, 114, 19);
-		contentPane.add(textField_5);
-		textField_5.setColumns(10);
-		
-		System.out.println(q.getCluster().getMetadata().getKeyspaces().toString());
-		System.out.println(q.getCluster().getMetadata().exportSchemaAsString());
-		System.out.println(q.getCluster().getMetadata().getAllHosts());
-
-		JTextPane textPane = new JTextPane();
-		textPane.setBounds(420, 43, 828, 704);
-		textPane.setText(q.getCluster().getMetadata().exportSchemaAsString()+
-				q.getCluster().getMetadata().getAllHosts());
 		
 		
-		JScrollPane jsp = new JScrollPane(textPane);
-		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		jsp.setBounds(420, 43, 1028, 704);
-		
-		contentPane.add(jsp);
 		
 		
 		

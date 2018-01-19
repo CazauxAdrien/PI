@@ -29,7 +29,7 @@ public class Cassandra_plot extends JFrame {
     // Create dataset
     // Create chart
     
-    
+    this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     JFreeChart chart = ChartFactory.createXYLineChart(
         "Cassandra", // Chart title
         "Nb", // X-Axis Label
@@ -38,10 +38,10 @@ public class Cassandra_plot extends JFrame {
     	XYPlot xyPlot = (XYPlot) chart.getPlot();
        
 		
-        LogarithmicAxis logAxis = new LogarithmicAxis("Price($)");
+        LogarithmicAxis logAxis = new LogarithmicAxis("Time");
         logAxis.setTickUnit(new NumberTickUnit(2));
         logAxis.setAutoRangeIncludesZero(true);
-        logAxis.setRange(0.9, 4000.0);
+        logAxis.setRange(0.0001, 10000.0);
         xyPlot.setRangeAxis(logAxis);
         
         
@@ -49,18 +49,4 @@ public class Cassandra_plot extends JFrame {
     setContentPane(panel);
   }
 
- 
-
-    
-
-  /*public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> {
-      Cassandra_plot example = new Cassandra_plot("Line Chart Example");
-      example.setAlwaysOnTop(true);
-      example.pack();
-      example.setSize(600, 400);
-      example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-      example.setVisible(true);
-    });
-  }*/
 }

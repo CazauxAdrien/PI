@@ -23,11 +23,9 @@ import com.datastax.driver.core.Session;
 public class Connexion_Cassandra {
 
 	private Cluster cluster;
-	 
     private Session session;
     public XYSeries series;
-    public XYSeries series1;
-    
+    public XYSeries series1; 
     public String IP;
     public int Port;
     public XYSeriesCollection DatasetTest;
@@ -48,42 +46,14 @@ public class Connexion_Cassandra {
             b.withPort(port);
         }
         
-        
         setCluster(b.build());
-        //System.out.println(cluster.getMetadata().getKeyspaces());
-        //System.out.println(cluster.getMetadata().exportSchemaAsString());
         session = getCluster().connect();
         
-        //System.out.println(session.toString());
-        
         
     }
     
-    public Cluster connectbis(String node, Integer port) {
-    	PoolingOptions poolingOptions = new PoolingOptions();
-    	poolingOptions
-        .setConnectionsPerHost(HostDistance.LOCAL,  4, 21)
-        .setConnectionsPerHost(HostDistance.REMOTE, 2, 21);
-
-        Builder b = Cluster.builder().addContactPoint(node).withPoolingOptions(poolingOptions);
-        if (port != null) {
-            b.withPort(port);
-        }
-        
-        setCluster(b.build());
-        return getCluster();
-        
-    }
- 
-    public Session getSession() {
-        return this.session;
-    }
- 
-    public void close() {
-        session.close();
-        getCluster().close();
-    }
     
+ 
     public void createKeyspace(String keyspaceName, String replicationStrategy, int replicationFactor) {
     		  StringBuilder sb = new StringBuilder("CREATE KEYSPACE IF NOT EXISTS ")
     		      .append(keyspaceName).append(" WITH replication = {")
@@ -116,12 +86,13 @@ public class Connexion_Cassandra {
     	for(int i=0;i<n;i++){
     		sum=0;
     		for(int a=0;a<17280;a++){
+    			ValuesConso conso= new ValuesConso(a);
 	    		StringBuilder sb = new StringBuilder("INSERT INTO "+KeySpace+"."+TABLE_NAME+ "( N ,"+PrimaryKey+ ","+ column1+","+ column2+") ")
 	    				.append("VALUES ( ")
 	    				.append(UUID.randomUUID()+" , ")
 	    				.append(i+" , '")
-	    				.append(generatedate(a)+"' , '")
-	    				.append(randomConso()+"'")
+	    				.append(conso.getDate()+"' , '")
+	    				.append(conso.getConso()+"'")
 	    				.append(" );");
 	    		String query = sb.toString();
 	    		
@@ -138,73 +109,29 @@ public class Connexion_Cassandra {
     	DatasetTest.addSeries(series);
 
     }
-    public String generatedate(int n){
-    	DateTime t = new DateTime(2017,1,1,0,0);
-    	t=t.plusMinutes(30*n);
-    	return t.toString(DateTimeFormat.shortDateTime());
-		
-    	
-    }
-    
-    public String randomConso(){
-    	char[] chars = "2345789".toCharArray();
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("0,0");
-    	Random random = new Random();
-    	for (int i = 0; i < 5; i++) {
-    	    char c = chars[random.nextInt(chars.length)];
-    	    sb.append(c);
-    	}
-    	String output = sb.toString();
-    	return output;
-    }
     
     
     
-    public class TestThread extends Thread{
-    	Session session;
-    	String KeyS;
-    	String TABLE_N;
-    	int nb ;
-    	int thre;
-    	public TestThread(String KeySpace, String TABLE_NAME,Session name,int nbthread, int clients){
-    		KeyS=KeySpace;
-        	TABLE_N=TABLE_NAME;
-    		session=name;
-    		thre=nbthread;
-    		nb= (int) (Math.random()*(clients-1));
-    		
-    	  }
-
-    	  public void run(){
-    		  //System.out.println("SELECT * FROM "+KeyS+"."+TABLE_N+" WHERE ID="+nb+" ALLOW FILTERING;");
-    		  long bfquer = System.currentTimeMillis();
-    		  ResultSet result =this.session.execute("SELECT * FROM "+KeyS+"."+TABLE_N+" WHERE ID="+nb+" ALLOW FILTERING;");
-    		  
-			  
-			  long afquer = System.currentTimeMillis()-bfquer;
-			  series1.add(thre,afquer);
-    		   //List<Row> matchedKeyspaces = result.all();
-    		      
-    		 
-    		   
-    	  }  
-    }
     
     public void acces_concurrent(String KeySpace, String TABLE_NAME,int n, int clients){
-    	Cluster cluster = connectbis(IP,Port);
-    	Session session=cluster.connect();
     	List<TestThread> ThreadList = new ArrayList<TestThread>();
+    	UseObjects u = new UseObjects(this);
+    	
+    	u.conc.set_All(KeySpace, TABLE_NAME, n, clients, this);
+    	
+    	
     	for (int i=0;i<n;i++){
-    		ThreadList.add(new TestThread(KeySpace, TABLE_NAME,session, i,clients));
+    		ThreadList.add(new TestThread(u,i));
+    		//ThreadList.add(new TestThread(KeySpace, TABLE_NAME,cluster, i,clients,this));
 		}
     	for (int i=0;i<ThreadList.size();i++){
     		ThreadList.get(i).start();
 		}
-    	//System.out.println(series1);
     	DatasetTest.addSeries(series1);
     }
 
+    
+   
 	public Cluster getCluster() {
 		return cluster;
 	}
@@ -214,6 +141,14 @@ public class Connexion_Cassandra {
 	}
     
     
+	public Session getSession() {
+        return this.session;
+    }
+ 
+    public void close() {
+        session.close();
+        getCluster().close();
+    }
     
     
     
