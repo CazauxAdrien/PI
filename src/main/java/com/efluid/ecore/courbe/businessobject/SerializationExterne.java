@@ -2,11 +2,22 @@ package com.efluid.ecore.courbe.businessobject;
 
 import java.io.*;
 
-/** Interface ayant un rôle similaire à {@link Externalizable}, mais tout en évitant de contourner la sérialisation standard */
+/** Interface ayant un rï¿½le similaire ï¿½ {@link Externalizable}, mais tout en ï¿½vitant de contourner la sï¿½rialisation standard */
 public interface SerializationExterne extends Serializable {
-  /** méthode permettant d'écrire des données à serializer dans au format externe, voir {@link Externalizable#writeExternal(ObjectOutput)} */
+  /**
+	 * Ne doit jamais changer. Utilisï¿½ par la VM pour dï¿½terminer toutes les
+	 * classes de {@link Valeur} qui sont "compatibles", donc mutuellement
+	 * sï¿½rialisables et dï¿½sï¿½rialisables. Cela n'est pas la version, voir plutï¿½t
+	 * le champs {@link Valeur#version}.<br>
+	 * <br>
+	 * <b>Attention :</b> c'est bien la mï¿½me version pour toutes les classes
+	 * filles.
+	 */
+	static final long serialVersionUID = 2983845307266774654L;
+
+/** mï¿½thode permettant d'ï¿½crire des donnï¿½es ï¿½ serializer dans au format externe, voir {@link Externalizable#writeExternal(ObjectOutput)} */
   void writeExternal(ObjectOutput out) throws IOException;
 
-  /** méthode permettant de lire les données serializer à partir d'un format externe, voir {@link Externalizable#readExternal(ObjectInput)} */
+  /** mï¿½thode permettant de lire les donnï¿½es serializer ï¿½ partir d'un format externe, voir {@link Externalizable#readExternal(ObjectInput)} */
   void readExternal(ObjectInput in) throws IOException, ClassNotFoundException;
 }

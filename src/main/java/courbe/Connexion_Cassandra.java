@@ -1,6 +1,7 @@
 package courbe;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -27,12 +28,16 @@ public class Connexion_Cassandra {
     public XYSeries series;
     public XYSeries series1;
     
+    public String IP;
+    public int Port;
     public XYSeriesCollection DatasetTest;
    
     public void connect(String node, Integer port) {
     	DatasetTest = new XYSeriesCollection();
     	series = new XYSeries("Import");
     	series1 = new XYSeries("Query");
+    	IP=node;
+    	Port=port;
     	PoolingOptions poolingOptions = new PoolingOptions();
     	poolingOptions
         .setConnectionsPerHost(HostDistance.LOCAL,  4, 21)
@@ -43,10 +48,12 @@ public class Connexion_Cassandra {
             b.withPort(port);
         }
         
-        cluster = b.build();
+        
+        setCluster(b.build());
         //System.out.println(cluster.getMetadata().getKeyspaces());
         //System.out.println(cluster.getMetadata().exportSchemaAsString());
-        session = cluster.connect();
+        session = getCluster().connect();
+        
         //System.out.println(session.toString());
         
         
@@ -63,8 +70,8 @@ public class Connexion_Cassandra {
             b.withPort(port);
         }
         
-        cluster = b.build();
-        return cluster;
+        setCluster(b.build());
+        return getCluster();
         
     }
  
@@ -74,7 +81,7 @@ public class Connexion_Cassandra {
  
     public void close() {
         session.close();
-        cluster.close();
+        getCluster().close();
     }
     
     public void createKeyspace(String keyspaceName, String replicationStrategy, int replicationFactor) {
@@ -105,7 +112,9 @@ public class Connexion_Cassandra {
     
     public void insertMasse(String KeySpace, String TABLE_NAME, String PrimaryKey, String column1, String column2,int n){
     	
+    	long sum;
     	for(int i=0;i<n;i++){
+    		sum=0;
     		for(int a=0;a<17280;a++){
 	    		StringBuilder sb = new StringBuilder("INSERT INTO "+KeySpace+"."+TABLE_NAME+ "( N ,"+PrimaryKey+ ","+ column1+","+ column2+") ")
 	    				.append("VALUES ( ")
@@ -119,9 +128,12 @@ public class Connexion_Cassandra {
 	    		long bfins = System.currentTimeMillis();
 			    session.execute(query);
 			    long afins = System.currentTimeMillis()-bfins;
-
-			    series.add(n*a,afins+0.0001);
+			    sum=sum+afins;
+			     
     		}
+    		double mean = sum*1.0/17280L;
+    		series.add(i, mean);
+    		System.out.println(mean);
     	}
     	DatasetTest.addSeries(series);
 
@@ -153,29 +165,26 @@ public class Connexion_Cassandra {
     	Session session;
     	String KeyS;
     	String TABLE_N;
-    	int nbclients;
     	int nb ;
-    	int trac;
-    	int nbconnexions;
-    	public TestThread(String KeySpace, String TABLE_NAME,Session name,int clients, int trace, int nbconnex){
+    	int thre;
+    	public TestThread(String KeySpace, String TABLE_NAME,Session name,int nbthread, int clients){
     		KeyS=KeySpace;
         	TABLE_N=TABLE_NAME;
     		session=name;
-    		nbclients=clients;
+    		thre=nbthread;
     		nb= (int) (Math.random()*(clients-1));
-    		trac = trace;
-    		nbconnexions=nbconnex;
     		
     	  }
 
     	  public void run(){
+    		  //System.out.println("SELECT * FROM "+KeyS+"."+TABLE_N+" WHERE ID="+nb+" ALLOW FILTERING;");
     		  long bfquer = System.currentTimeMillis();
     		  ResultSet result =this.session.execute("SELECT * FROM "+KeyS+"."+TABLE_N+" WHERE ID="+nb+" ALLOW FILTERING;");
     		  
 			  
 			  long afquer = System.currentTimeMillis()-bfquer;
-			  series1.add(nbconnexions*trac,afquer);
-    		   List<Row> matchedKeyspaces = result.all();
+			  series1.add(thre,afquer);
+    		   //List<Row> matchedKeyspaces = result.all();
     		      
     		 
     		   
@@ -183,19 +192,26 @@ public class Connexion_Cassandra {
     }
     
     public void acces_concurrent(String KeySpace, String TABLE_NAME,int n, int clients){
-    	Cluster cluster = connectbis("127.0.0.1",9042);
+    	Cluster cluster = connectbis(IP,Port);
     	Session session=cluster.connect();
-    	int trace = (int) (clients*17280)/(n-1);
     	List<TestThread> ThreadList = new ArrayList<TestThread>();
     	for (int i=0;i<n;i++){
-    		ThreadList.add(new TestThread(KeySpace, TABLE_NAME,session, clients, trace , i ));
+    		ThreadList.add(new TestThread(KeySpace, TABLE_NAME,session, i,clients));
 		}
     	for (int i=0;i<ThreadList.size();i++){
     		ThreadList.get(i).start();
 		}
-    	System.out.println(series1);
+    	//System.out.println(series1);
     	DatasetTest.addSeries(series1);
     }
+
+	public Cluster getCluster() {
+		return cluster;
+	}
+
+	public void setCluster(Cluster cluster) {
+		this.cluster = cluster;
+	}
     
     
     
