@@ -2,6 +2,7 @@ package courbe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
@@ -28,9 +29,9 @@ public class Connexion_influxDB {
     double max = 0.23;
     double min = 0.03;
     
-    
     public void connect_influx(String IP, int port){
     	 influxDB = InfluxDBFactory.connect("http://" + IP + ":" + port, "root", "root");
+    	 influxDB.enableBatch(1500000, 1000000, TimeUnit.MILLISECONDS,java.util.concurrent.Executors.defaultThreadFactory());
     	 Pong response = this.influxDB.ping();
     	 System.out.println(response);
     	 DatasetTest = new XYSeriesCollection();
@@ -50,9 +51,10 @@ public class Connexion_influxDB {
     }
     
 	 public void insertMasse(String dbName, String rpName,String Grandeur_ref, String valeur, int n){
-		 BatchPoints batchPoints = BatchPoints.database(dbName).retentionPolicy(rpName).build();
+		 
 	        for(int i=0;i<n;i++){
 	        	for(int j=0;j<12;j++){
+	        		BatchPoints batchPoints = BatchPoints.database(dbName).retentionPolicy(rpName).build();
 	        		for(int a=0;a<1440;a++){ // BatchPoint contient la consommation d'un mois 
 	        			double random = min + Math.random() * (max - min);
 	        			Point point1 = Point
@@ -62,13 +64,15 @@ public class Connexion_influxDB {
 	        					.addField(valeur, random)
 	        					.build(); 
 	        			batchPoints.point(point1);
-	        			System.out.println(point1.getTags());        
+	        			//influxDB.write(point1);
+	        			//System.out.println(point1.getTags());        
 	        		}
+
 	        		long bfins = System.currentTimeMillis();
 		            this.influxDB.write(batchPoints);
 				    long afins = System.currentTimeMillis()-bfins;
 
-				    series.add(n*i,afins+0.0001);
+				    series.add((i*12)+j,afins+0.0001);
 	            }
 	            
 	            

@@ -12,7 +12,6 @@ import org.influxdb.InfluxDB;
 
 import courbe.Connexion_Cassandra;
 import courbe.Connexion_influxDB;
-import courbe.InfluxTest;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -121,11 +120,12 @@ public class MainWindow {
 					String IP=textField_2.getText();
 					int port = Integer.parseInt(textField_3.getText());	
 					inf.connect_influx(IP, port);
-					
+					frame.dispose();
 				}
 				catch(Exception e){
 					JOptionPane.showMessageDialog(null, "Erreur de connexion");
 				}
+				
 				InfluxTest influxtest = new InfluxTest(inf);
 				influxtest.setVisible(true);
 			}

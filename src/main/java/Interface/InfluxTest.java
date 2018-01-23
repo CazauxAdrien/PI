@@ -1,4 +1,4 @@
-package courbe;
+package Interface;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,12 +12,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-
-import Interface.Influxdb_plot;
+import courbe.Connexion_influxDB;
 
 
 public class InfluxTest extends JFrame{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_2;
