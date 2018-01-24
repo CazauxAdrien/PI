@@ -31,7 +31,7 @@ public class Connexion_influxDB {
     
     public void connect_influx(String IP, int port){
     	 influxDB = InfluxDBFactory.connect("http://" + IP + ":" + port, "root", "root");
-    	 influxDB.enableBatch(1500000, 1000000, TimeUnit.MILLISECONDS,java.util.concurrent.Executors.defaultThreadFactory());
+    	 influxDB.enableBatch(1500000, 1000000, TimeUnit.MILLISECONDS);
     	 Pong response = this.influxDB.ping();
     	 System.out.println(response);
     	 DatasetTest = new XYSeriesCollection();
