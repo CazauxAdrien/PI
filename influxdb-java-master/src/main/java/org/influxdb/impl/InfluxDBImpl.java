@@ -81,6 +81,12 @@ public class InfluxDBImpl implements InfluxDB {
   public InfluxDBImpl(final String url, final String username, final String password,
       final OkHttpClient.Builder client) {
     super();
+    
+    client.connectTimeout(300, TimeUnit.SECONDS); 
+    client.readTimeout(300, TimeUnit.SECONDS); 
+    client.writeTimeout(300, TimeUnit.SECONDS); 
+    client.build();
+    
     Moshi moshi = new Moshi.Builder().build();
     this.hostAddress = parseHostAddress(url);
     this.username = username;
@@ -100,6 +106,12 @@ public class InfluxDBImpl implements InfluxDB {
     InfluxDBImpl(final String url, final String username, final String password, final OkHttpClient.Builder client,
             final InfluxDBService influxDBService, final JsonAdapter<QueryResult> adapter) {
         super();
+
+        client.connectTimeout(300, TimeUnit.SECONDS); 
+        client.readTimeout(300, TimeUnit.SECONDS); 
+        client.writeTimeout(300, TimeUnit.SECONDS); 
+        client.build();
+        
         this.hostAddress = parseHostAddress(url);
         this.username = username;
         this.password = password;
@@ -118,7 +130,14 @@ public class InfluxDBImpl implements InfluxDB {
   public InfluxDBImpl(final String url, final String username, final String password,
                       final OkHttpClient.Builder client, final String database,
                       final String retentionPolicy, final ConsistencyLevel consistency) {
+	  
+	  
     this(url, username, password, client);
+    
+	  client.connectTimeout(300, TimeUnit.SECONDS); 
+	  client.readTimeout(300, TimeUnit.SECONDS); 
+	  client.writeTimeout(300, TimeUnit.SECONDS); 
+	  client.build();
 
     setConsistency(consistency);
     setDatabase(database);
