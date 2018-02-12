@@ -175,7 +175,12 @@ public class Cassandra extends JFrame {
 				
 				q.createTable(textField.getText(),textField_1.getText(),"ID","Time","Value");
 				
-				q.insertMasse(textField.getText(),textField_1.getText(),"ID","Time","Value", clients);
+				try {
+					q.insertMasse(textField.getText(),textField_1.getText(),"ID","Time","Value", clients);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 				q.acces_concurrent(textField.getText(),textField_1.getText(),connex,clients);
 				

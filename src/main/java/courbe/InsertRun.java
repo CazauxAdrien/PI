@@ -23,7 +23,7 @@ public class InsertRun implements Runnable{
 	@Override
 	public void run() {
 		clu.newSession().execute(ps.bind(UUID.randomUUID(),us+users, conso.getDate(), conso.getConso()));
-		System.out.println("COucou");
+	
 	}
 
 }

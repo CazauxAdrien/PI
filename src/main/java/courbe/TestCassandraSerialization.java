@@ -1,5 +1,9 @@
 package courbe;
 import java.nio.ByteBuffer;
+import java.util.UUID;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.Object;
 import org.apache.commons.lang3.SerializationUtils;
 import com.datastax.driver.core.utils.Bytes;
@@ -15,9 +19,14 @@ import com.datastax.driver.core.Session;
 public class TestCassandraSerialization {
 	private Cluster cluster;
     private Session session;
+    ByteArrayOutputStream stream;
+    ObjectOutputStream storeObject;
 
-    public TestCassandraSerialization(String node) {
-        connect(node);
+    public TestCassandraSerialization(Cluster cluster,Session session) throws IOException {
+        this.cluster=cluster;
+        this.session=session;
+        stream = new ByteArrayOutputStream();
+        storeObject = new ObjectOutputStream(stream);
     }
 
     private void connect(String node) {
@@ -41,10 +50,14 @@ public class TestCassandraSerialization {
         session.execute("DROP KEYSPACE test_serialization");
     }
 
-    public void insertIntoTable(String key, byte[] data) {
-        PreparedStatement statement = session.prepare("INSERT INTO test_serialization.test_table (id,data) VALUES (?, ?)");
+    public void insertIntoTable(String KeySpace, String TABLE_NAME, String PrimaryKey,String column1, String column2, ValuesConso v, int client) throws IOException {
+    	
+        v.writeExternal(storeObject);
+        storeObject.flush();
+        storeObject.close();
+        PreparedStatement statement = session.prepare("INSERT INTO "+KeySpace+"."+TABLE_NAME+ "( N ,"+PrimaryKey+ ","+ column1+","+ column2+") VALUES (?, ?, ?, ?)");
         BoundStatement boundStatement = new BoundStatement(statement);
-        session.execute(boundStatement.bind(key,ByteBuffer.wrap(data)));
+        session.executeAsync(boundStatement.bind(UUID.randomUUID(),client,ByteBuffer.wrap(stream.toByteArray())));
     }
 
     public byte[] readFromTable(String key) {

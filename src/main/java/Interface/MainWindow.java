@@ -114,8 +114,6 @@ public class MainWindow {
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Connexion_influxDB inf = new Connexion_influxDB();
-				InfluxDB influxDB =null;
-				inf.influxDB=influxDB;
 				try{
 					String IP=textField_2.getText();
 					int port = Integer.parseInt(textField_3.getText());	

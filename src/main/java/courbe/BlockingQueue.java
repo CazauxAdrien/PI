@@ -5,7 +5,7 @@ import java.util.List;
 
 public class BlockingQueue {
 
-	  private List queue = new LinkedList();
+	  public List queue = new LinkedList();
 	  private int  limit = 10;
 
 	  public BlockingQueue(int limit){
@@ -15,7 +15,6 @@ public class BlockingQueue {
 
 	  public synchronized void enqueue(Object item)
 	  throws InterruptedException  {
-		  System.out.println("Heyyy");
 	    while(this.queue.size() == this.limit) {
 	      wait();
 	    }
@@ -37,6 +36,7 @@ public class BlockingQueue {
 
 	    return this.queue.remove(0);
 	  }
+	  
 
 	}
 	   

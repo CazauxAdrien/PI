@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ThreadPool {
 
-    private BlockingQueue taskQueue = null;
+    public BlockingQueue taskQueue = null;
     private List<PoolThread> threads = new ArrayList<PoolThread>();
     private boolean isStopped = false;
 

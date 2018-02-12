@@ -1,6 +1,9 @@
 package courbe;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +12,12 @@ import java.util.Random;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-public class ValuesConso{
+
+public class ValuesConso implements SerializationExterne{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6715701598812397844L;
 	private String conso;
 	private String date;
 	
@@ -54,4 +62,20 @@ public class ValuesConso{
     	String output = sb.toString();
     	return output;
     }
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(date);
+		out.writeObject(conso);
+		
+		
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		date =(String) in.readObject();
+		conso =(String) in.readObject();
+		
+		
+	}
 }
