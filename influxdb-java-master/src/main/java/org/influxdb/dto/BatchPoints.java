@@ -207,7 +207,7 @@ public class BatchPoints {
    * @param tags
    *            the tags to set
    */
-  void setTags(final Map<String, String> tags) {
+  public void setTags(final Map<String, String> tags) {
     this.tags = tags;
   }
 
