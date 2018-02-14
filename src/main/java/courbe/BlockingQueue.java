@@ -13,7 +13,8 @@ public class BlockingQueue {
 	  }
 
 
-	  public synchronized void enqueue(Object item)
+	  @SuppressWarnings("unchecked")
+	public synchronized void enqueue(Object item)
 	  throws InterruptedException  {
 	    while(this.queue.size() == this.limit) {
 	      wait();
@@ -27,6 +28,7 @@ public class BlockingQueue {
 
 	  public synchronized Object dequeue()
 	  throws InterruptedException{
+		  System.out.println(this.queue.size());
 	    while(this.queue.size() == 0){
 	      wait();
 	    }

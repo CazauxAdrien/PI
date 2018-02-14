@@ -21,6 +21,7 @@ import com.datastax.driver.core.Cluster.Builder;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
@@ -153,10 +154,10 @@ public class Connexion_Cassandra {
     			ValuesConso conso= new ValuesConso(a);
 	    		Statement sb = new SimpleStatement("INSERT INTO "+KeySpace+"."+TABLE_NAME+ "( N ,"+PrimaryKey+ ","+ column1+","+ column2+") VALUES ("
 	    				+ " "+UUID.randomUUID()+" , "+i+2*n+" , '"+conso.getDate()+"' , '"+conso.getConso()+"'"+" );");
-	    				
+	    			
 	    		
 	    		//long bfins = System.currentTimeMillis();
-			    session.executeAsync(sb);
+			    ResultSetFuture e = session.executeAsync(sb);
 			    //long afins = System.currentTimeMillis()-bfins;
 			    //sum=sum+afins;
 			     
@@ -170,31 +171,30 @@ public class Connexion_Cassandra {
     	oneyear = System.currentTimeMillis()-oneyear;
     	System.out.println("3rd "+oneyear);
     	DatasetTest.addSeries(seriesAsync);
-    	
-    	//4th Thread Async
     	/*
+    	//4th Thread Async
+    	
     	oneyear = System.currentTimeMillis();
     	
-    	 com.datastax.driver.core.PreparedStatement pst =
-	     session.prepare("INSERT INTO "+KeySpace+"."+TABLE_NAME+ "( N ,"+PrimaryKey+ ","+ column1+","+ column2+") VALUES (?, ?, ?, ?)");
-	     
+    	com.datastax.driver.core.PreparedStatement pst =
+	    session.prepare("INSERT INTO "+KeySpace+"."+TABLE_NAME+ "( N ,"+PrimaryKey+ ","+ column1+","+ column2+") VALUES (?, ?, ?, ?)");
+	    ThreadPool TP = new ThreadPool(2,100000000);
     	for(int i=0;i<n;i++){
-    		ThreadPool TP = new ThreadPool(6,17280);
+    		
     		//sum=0;
     		for(int a=0;a<17280;a++){
     			
 	    		InsertRun IR= new InsertRun(cluster,n,a,i,pst);
     			TP.execute(IR);
     		}
-    		wait();
     	}
+    	while(TP.taskQueue.queue.size()!=0){}
     	oneyear = System.currentTimeMillis()-oneyear;
     	System.out.println("thread "+oneyear);
     	//DatasetTest.addSeries(seriesAsync);
     	
-    	*/
     	
-    	
+    */	  	
 	    }
     
     

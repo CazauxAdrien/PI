@@ -19,14 +19,11 @@ import com.datastax.driver.core.Session;
 public class TestCassandraSerialization {
 	private Cluster cluster;
     private Session session;
-    ByteArrayOutputStream stream;
-    ObjectOutputStream storeObject;
+    
 
     public TestCassandraSerialization(Cluster cluster,Session session) throws IOException {
         this.cluster=cluster;
         this.session=session;
-        stream = new ByteArrayOutputStream();
-        storeObject = new ObjectOutputStream(stream);
     }
 
     private void connect(String node) {
@@ -51,7 +48,8 @@ public class TestCassandraSerialization {
     }
 
     public void insertIntoTable(String KeySpace, String TABLE_NAME, String PrimaryKey,String column1, String column2, ValuesConso v, int client) throws IOException {
-    	
+    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        ObjectOutputStream storeObject = new ObjectOutputStream(stream);
         v.writeExternal(storeObject);
         storeObject.flush();
         storeObject.close();

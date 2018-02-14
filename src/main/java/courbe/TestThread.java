@@ -24,7 +24,6 @@ public class TestThread extends Thread{
 		  //ResultSet result =this.session.execute("SELECT * FROM "+KeyS+"."+TABLE_N+" WHERE ID="+nb+" ALLOW FILTERING;");
 		  ResultSet result =session.execute("SELECT * FROM "+u.conc.KeyS+"."+u.conc.TABLE_N+" WHERE ID="+nb+" ALLOW FILTERING;");
 		  long afquer = System.currentTimeMillis()-bfquer;
-		  
 		  u.conc.co.series1.add(nbTh,afquer);
 		  u.conc.co.getSession().close();
 		  
