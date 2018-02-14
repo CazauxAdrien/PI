@@ -1,8 +1,9 @@
 package courbe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
@@ -24,14 +25,13 @@ public class Connexion_influxDB {
     
     public XYSeriesCollection DatasetTest;
     
-    DateTime t = new DateTime(2017,1,1,0,0);
-    long timelong = t.getMillis();
+
     double max = 0.23;
     double min = 0.03;
     
+    
     public void connect_influx(String IP, int port){
     	 influxDB = InfluxDBFactory.connect("http://" + IP + ":" + port, "root", "root");
-    	 influxDB.enableBatch(1500000, 1000000, TimeUnit.MILLISECONDS);
     	 Pong response = this.influxDB.ping();
     	 System.out.println(response);
     	 DatasetTest = new XYSeriesCollection();
@@ -51,34 +51,86 @@ public class Connexion_influxDB {
     }
     
 	 public void insertMasse(String dbName, String rpName,String Grandeur_ref, String valeur, int n){
+		 BatchPoints batchPoints = BatchPoints.database(dbName).retentionPolicy(rpName).build();
+		 Map<String, String> data = new HashMap<String, String>();
+		 DateTime t = new DateTime(2017,1,1,0,0);
+		 long respondtime = 0;
+		 long totaltime = 0;
+		 long time_init = t.getMillis();
+		 long timelong = time_init;
 		 
-	        for(int i=0;i<n;i++){
-	        	for(int j=0;j<12;j++){
-	        		BatchPoints batchPoints = BatchPoints.database(dbName).retentionPolicy(rpName).build();
-	        		for(int a=0;a<1440;a++){ // BatchPoint contient la consommation d'un mois 
+		 
+		 
+	        for(int i=1;i<n;i++){    //nb de clients
+	        	for (int j=1;j<2;j++) {
+	        		for(int a=0;a<1440*6;a++){ // nb de points dans un mois
+	        			timelong = time_init + 1000*60*30*a;
 	        			double random = min + Math.random() * (max - min);
 	        			Point point1 = Point
 	        					.measurement("consommation")
+	        					.tag("idClient", String.valueOf(i))
 	        					.tag(Grandeur_ref, "352447")
-	        					.time(timelong+a*1000*60*30, TimeUnit.MILLISECONDS)
 	        					.addField(valeur, random)
-	        					.build(); 
+	        					.time(timelong, TimeUnit.MILLISECONDS)
+	        					.build();
+	        			data.put("idClient", String.valueOf(i));
+	        			batchPoints.setTags(data);
 	        			batchPoints.point(point1);
-	        			//influxDB.write(point1);
-	        			//System.out.println(point1.getTags());        
-	        		}
+	        			System.out.println(a + ";" + timelong + ";" + ";" + i);
+	        			System.out.println(batchPoints.getTags());
+	        			}
 
+	        		System.out.println("avant");
 	        		long bfins = System.currentTimeMillis();
 		            this.influxDB.write(batchPoints);
-				    long afins = System.currentTimeMillis()-bfins;
+		            long afins = System.currentTimeMillis();
+		            System.out.println("après");
+				    //long afins = System.currentTimeMillis()-bfins;
+				    respondtime += afins-bfins;
+				    }
+	        	series.add(n*i,respondtime+0.0001);
+	        	}
+	        	
+	        	
+		 
+		 /*
+		 
+	        for(int i=0;i<n;i++){
+	        	for(int j=0;j<2;j++){
+	        		Point[] points = new Point[1440];
+	        		for(int m=0;m<1440;m++){ // BatchPoint contient la consommation d'un mois 
+	        			double random = min + Math.random() * (max - min);
+	        			points[m]= Point
+	 	        					.measurement("consommation")
+	 	        					.tag(Grandeur_ref, "352447")
+	 	        					.time(timelong+m*1000*60*30, TimeUnit.MILLISECONDS)
+	 	        					.addField(valeur, random)
+	 	        					.build(); 
+	        			}
+	        			for (int m = 0; m < 1440; m++) {
+	        				batchPoints.point(points[m]);
+	        		}
+	        			System.out.println("avant");
+		        		long bfins = System.currentTimeMillis();
+			            this.influxDB.write(batchPoints);
+			            long afins = System.currentTimeMillis();
+			            System.out.println("après");
+					    //long afins = System.currentTimeMillis()-bfins;
+					    respondtime = afins-bfins;
+					    totaltime += afins - bfins;
+					    System.out.println("Temps d'écriture : " + respondtime);
 
-				    series.add((i*12)+j,afins+0.0001);
+				    series.add(n*i,respondtime+0.0001);
 	            }
 	            
 	            
+	            
 	        }
+	        */	
+	        System.out.println("Temps d'écriture total : " + respondtime);
 	        DatasetTest.addSeries(series);
 	    }
+	 
 	 
 	
 	
