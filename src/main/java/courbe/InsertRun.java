@@ -20,7 +20,6 @@ public class InsertRun implements Runnable{
 		this.us=i;
 		this.clu=cluster;
 	}
-	@Override
 	public void run() {
 		clu.newSession().execute(ps.bind(UUID.randomUUID(),us+users, conso.getDate(), conso.getConso()));
 	

@@ -32,7 +32,7 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow();
+					MainWindow window = new MainWindow(args);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -44,8 +44,8 @@ public class MainWindow {
 	/**
 	 * Create the application.
 	 */
-	public MainWindow() {
-		System.out.println((int) (Math.random()*6 ));
+	public MainWindow(String[] args) {
+
 		frame = new JFrame();
 		frame.setBounds(200, 200, 750, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,7 +69,6 @@ public class MainWindow {
 		btnConnexion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Connexion_Cassandra q = new Connexion_Cassandra();
-				
 				try{
 					String IP=textField.getText();
 					int port = Integer.parseInt(textField_1.getText());

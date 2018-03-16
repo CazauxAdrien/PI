@@ -63,7 +63,6 @@ public class ValuesConso implements SerializationExterne{
     	return output;
     }
 
-	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeObject(date);
 		out.writeObject(conso);
@@ -71,7 +70,6 @@ public class ValuesConso implements SerializationExterne{
 		
 	}
 
-	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		date =(String) in.readObject();
 		conso =(String) in.readObject();
